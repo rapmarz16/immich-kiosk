@@ -74,12 +74,17 @@
     border-radius: 999px;
 }
 
+.davening-times__row--neitz .davening-times__icon,
 .davening-times__row--morning .davening-times__icon {
     background: rgba(255, 185, 92, 0.22);
 }
 
 .davening-times__row--afternoon .davening-times__icon {
     background: rgba(255, 226, 94, 0.2);
+}
+
+.davening-times__row--shkiah .davening-times__icon {
+    background: rgba(255, 128, 96, 0.22);
 }
 
 .davening-times__row--night .davening-times__icon {
