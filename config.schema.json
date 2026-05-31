@@ -500,8 +500,8 @@
         "source_url": {
           "type": "string",
           "format": "uri",
-          "default": "https://www.myzmanim.com/day.aspx?vars=75405214",
-          "description": "MyZmanim day page to scrape for sunrise and sunset"
+          "default": "https://www.khaltoraschesed.com/",
+          "description": "Shul page to scrape for today's sun and davening times"
         },
         "cache_file": {
           "type": "string",

@@ -153,15 +153,15 @@ type ZmanimConfig struct {
 	ShowSunTimes bool `json:"showSunTimes" yaml:"show_sun_times" mapstructure:"show_sun_times" query:"show_sun_times" form:"show_sun_times" default:"true"`
 	// ShowDaveningTimes controls the Shachris/Mincha/Maariv group independently from sun times.
 	ShowDaveningTimes bool `json:"showDaveningTimes" yaml:"show_davening_times" mapstructure:"show_davening_times" query:"show_davening_times" form:"show_davening_times" default:"true"`
-	// SourceURL is the MyZmanim page to scrape for today's sunrise and sunset.
-	SourceURL string `json:"sourceUrl" yaml:"source_url" mapstructure:"source_url" default:"https://www.myzmanim.com/day.aspx?vars=75405214" redact:"true"`
+	// SourceURL is the shul page to scrape for today's sun and davening times.
+	SourceURL string `json:"sourceUrl" yaml:"source_url" mapstructure:"source_url" default:"https://www.khaltoraschesed.com/" redact:"true"`
 	// CacheFile stores the last fetched sun times and should live on a persistent volume.
 	CacheFile string `json:"cacheFile" yaml:"cache_file" mapstructure:"cache_file" default:"" redact:"true"`
 	// RefreshTime is the local 24-hour time to refresh sun times daily.
 	RefreshTime string `json:"refreshTime" yaml:"refresh_time" mapstructure:"refresh_time" default:"01:00"`
-	// FallbackNeitz is shown if MyZmanim cannot be fetched or parsed.
+	// FallbackNeitz is shown if source_url cannot be fetched or parsed.
 	FallbackNeitz string `json:"fallbackNeitz" yaml:"fallback_neitz" mapstructure:"fallback_neitz" default:"5:31 AM"`
-	// FallbackShkiah is shown if MyZmanim cannot be fetched or parsed.
+	// FallbackShkiah is shown if source_url cannot be fetched or parsed.
 	FallbackShkiah string `json:"fallbackShkiah" yaml:"fallback_shkiah" mapstructure:"fallback_shkiah" default:"8:51 PM"`
 }
 

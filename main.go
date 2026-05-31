@@ -116,9 +116,10 @@ func main() {
 			RefreshTime: baseConfig.Zmanim.RefreshTime,
 			HTTPTimeout: time.Second * time.Duration(baseConfig.Kiosk.HTTPTimeout),
 			FallbackData: zmanim.Times{
-				Source:  baseConfig.Zmanim.SourceURL,
-				Sunrise: baseConfig.Zmanim.FallbackNeitz,
-				Sunset:  baseConfig.Zmanim.FallbackShkiah,
+				Source:   baseConfig.Zmanim.SourceURL,
+				Sunrise:  baseConfig.Zmanim.FallbackNeitz,
+				Sunset:   baseConfig.Zmanim.FallbackShkiah,
+				Davening: zmanim.DefaultDaveningTimes(),
 			},
 		})
 		zmanimManager.Start(c.Context())

@@ -18,19 +18,25 @@ import (
 )
 
 const (
-	DefaultSourceURL      = "https://www.myzmanim.com/day.aspx?vars=75405214"
+	DefaultSourceURL      = "https://www.khaltoraschesed.com/"
 	DefaultRefreshTime    = "01:00"
 	DefaultFallbackNeitz  = "5:31 AM"
 	DefaultFallbackShkiah = "8:51 PM"
 )
 
 type Times struct {
-	Date      string `json:"date"`
-	Source    string `json:"source"`
-	Location  string `json:"location,omitempty"`
-	Sunrise   string `json:"sunrise"`
-	Sunset    string `json:"sunset"`
-	FetchedAt string `json:"fetched_at"`
+	Date      string      `json:"date"`
+	Source    string      `json:"source"`
+	Location  string      `json:"location,omitempty"`
+	Sunrise   string      `json:"sunrise"`
+	Sunset    string      `json:"sunset"`
+	Davening  []TimeEntry `json:"davening,omitempty"`
+	FetchedAt string      `json:"fetched_at"`
+}
+
+type TimeEntry struct {
+	Label string `json:"label"`
+	Time  string `json:"time"`
 }
 
 type Config struct {
@@ -66,6 +72,9 @@ func NewManager(config Config) *Manager {
 	}
 	if config.FallbackData.Sunset == "" {
 		config.FallbackData.Sunset = DefaultFallbackShkiah
+	}
+	if len(config.FallbackData.Davening) == 0 {
+		config.FallbackData.Davening = DefaultDaveningTimes()
 	}
 	if config.FallbackData.Date == "" {
 		config.FallbackData.Date = time.Now().Local().Format(time.DateOnly)
@@ -118,7 +127,7 @@ func (m *Manager) refresh(ctx context.Context, reason string) bool {
 	if err := SaveCache(m.config.CacheFile, data); err != nil {
 		log.Warn("saving zmanim cache", "err", err, "file", m.config.CacheFile)
 	} else {
-		log.Info("Updated zmanim cache", "reason", reason, "sunrise", data.Sunrise, "sunset", data.Sunset)
+		log.Info("Updated zmanim cache", "reason", reason, "sunrise", data.Sunrise, "sunset", data.Sunset, "davening_times", len(data.Davening))
 	}
 	m.set(data)
 	return true
@@ -163,6 +172,9 @@ func (m *Manager) set(data Times) {
 	}
 	if data.Sunset == "" {
 		data.Sunset = m.config.FallbackData.Sunset
+	}
+	if len(data.Davening) == 0 {
+		data.Davening = m.config.FallbackData.Davening
 	}
 	m.mu.Lock()
 	m.data = data
@@ -220,6 +232,14 @@ func SaveCache(path string, data Times) error {
 	return os.Rename(tmp, path)
 }
 
+func DefaultDaveningTimes() []TimeEntry {
+	return []TimeEntry{
+		{Label: "Shachris", Time: "8:00 AM"},
+		{Label: "Mincha", Time: "8:30 PM"},
+		{Label: "Maariv", Time: "9:00 PM"},
+	}
+}
+
 func ScrapeToday(ctx context.Context, client *http.Client, sourceURL string) (Times, error) {
 	if client == nil {
 		client = &http.Client{Timeout: 20 * time.Second}
@@ -228,7 +248,9 @@ func ScrapeToday(ctx context.Context, client *http.Client, sourceURL string) (Ti
 	if err != nil {
 		return Times{}, err
 	}
-	req.Header.Set("User-Agent", "Mozilla/5.0")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36")
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -246,6 +268,13 @@ func ScrapeToday(ctx context.Context, client *http.Client, sourceURL string) (Ti
 }
 
 func ParseTodayHTML(page, sourceURL string, now time.Time) (Times, error) {
+	if data, err := parseKhalTorasChesedHTML(page, sourceURL, now); err == nil {
+		return data, nil
+	}
+	return parseMyZmanimHTML(page, sourceURL, now)
+}
+
+func parseMyZmanimHTML(page, sourceURL string, now time.Time) (Times, error) {
 	text := htmlToText(page)
 	location := parseTitle(page)
 
@@ -259,10 +288,103 @@ func ParseTodayHTML(page, sourceURL string, now time.Time) (Times, error) {
 		Date:      now.Format(time.DateOnly),
 		Source:    sourceURL,
 		Location:  location,
-		Sunrise:   addAM(match[2]),
-		Sunset:    addPM(match[3]),
+		Sunrise:   normalizeClockTime(match[2], "AM"),
+		Sunset:    normalizeClockTime(match[3], "PM"),
+		Davening:  DefaultDaveningTimes(),
 		FetchedAt: now.Format(time.RFC3339),
 	}, nil
+}
+
+func parseKhalTorasChesedHTML(page, sourceURL string, now time.Time) (Times, error) {
+	text := htmlToText(page)
+	location := parseTitle(page)
+
+	sunrise := findTimeAfterLabels(text, []string{"Neitz", "Netz", "Sunrise"})
+	sunset := findTimeAfterLabels(text, []string{"Shkiah", "Shkia", "Sunset"})
+	davening := parseDaveningTimes(text)
+
+	if sunrise == "" || sunset == "" || len(davening) == 0 {
+		return Times{}, fmt.Errorf("could not parse Khal Toras Chesed zmanim")
+	}
+
+	return Times{
+		Date:      now.Format(time.DateOnly),
+		Source:    sourceURL,
+		Location:  location,
+		Sunrise:   normalizeClockTime(sunrise, "AM"),
+		Sunset:    normalizeClockTime(sunset, "PM"),
+		Davening:  davening,
+		FetchedAt: now.Format(time.RFC3339),
+	}, nil
+}
+
+func findTimeAfterLabels(text string, labels []string) string {
+	for _, label := range labels {
+		pattern := regexp.MustCompile(`(?is)\b` + regexp.QuoteMeta(label) + `(?:\s+(?:Hachama|HaChama))?\b\s*[:\-–]?\s*([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)`)
+		if match := pattern.FindStringSubmatch(text); len(match) == 2 {
+			return match[1]
+		}
+		reversePattern := regexp.MustCompile(`(?is)([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)\s+\b` + regexp.QuoteMeta(label) + `(?:\s+(?:Hachama|HaChama))?\b`)
+		if match := reversePattern.FindStringSubmatch(text); len(match) == 2 {
+			return match[1]
+		}
+	}
+	return ""
+}
+
+func parseDaveningTimes(text string) []TimeEntry {
+	section := todaysCalendarSection(text)
+	if section == "" {
+		section = text
+	}
+
+	entries := []TimeEntry{}
+	for _, item := range []struct {
+		label    string
+		patterns []string
+	}{
+		{label: "Shachris", patterns: []string{"Shachris", "Shacharit", "Shacharis"}},
+		{label: "Mincha", patterns: []string{"Mincha"}},
+		{label: "Maariv", patterns: []string{"Maariv", "Ma'ariv"}},
+	} {
+		if value := findDaveningTime(section, item.patterns); value != "" {
+			entries = append(entries, TimeEntry{Label: item.label, Time: value})
+		}
+	}
+	return entries
+}
+
+func todaysCalendarSection(text string) string {
+	pattern := regexp.MustCompile(`(?is)Today(?:'s)?\s+Calendar(.*?)(?:Tomorrow(?:'s)?\s+Calendar|Upcoming|Full Calendar|Announcements|$)`)
+	if match := pattern.FindStringSubmatch(text); len(match) == 2 {
+		return match[1]
+	}
+	return ""
+}
+
+func findDaveningTime(section string, labels []string) string {
+	for _, label := range labels {
+		patterns := []*regexp.Regexp{
+			regexp.MustCompile(`(?is)\b` + regexp.QuoteMeta(label) + `\b(?!\s+Hamincha)(?:\s+(?:Gedolah|Ketana))?\s*[:\-–]?\s*([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)`),
+			regexp.MustCompile(`(?is)([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)\s+\b` + regexp.QuoteMeta(label) + `\b(?!\s+Hamincha)`),
+		}
+		matches := [][]string{}
+		for _, pattern := range patterns {
+			matches = append(matches, pattern.FindAllStringSubmatch(section, -1)...)
+		}
+		for _, match := range matches {
+			line := strings.ToLower(match[0])
+			if strings.Contains(line, "plag") || strings.Contains(line, "hamincha") {
+				continue
+			}
+			defaultPeriod := "AM"
+			if strings.EqualFold(label, "Mincha") || strings.EqualFold(label, "Maariv") || strings.EqualFold(label, "Ma'ariv") {
+				defaultPeriod = "PM"
+			}
+			return normalizeClockTime(match[1], defaultPeriod)
+		}
+	}
+	return ""
 }
 
 func htmlToText(page string) string {
@@ -285,16 +407,11 @@ func parseTitle(page string) string {
 	return title
 }
 
-func addAM(value string) string {
-	if strings.Contains(strings.ToUpper(value), "AM") || strings.Contains(strings.ToUpper(value), "PM") {
-		return value
+func normalizeClockTime(value, defaultPeriod string) string {
+	value = strings.TrimSpace(strings.ToUpper(strings.ReplaceAll(value, ".", "")))
+	value = regexp.MustCompile(`\s+`).ReplaceAllString(value, " ")
+	if strings.HasSuffix(value, "AM") || strings.HasSuffix(value, "PM") {
+		return regexp.MustCompile(`\s*(AM|PM)$`).ReplaceAllString(value, " $1")
 	}
-	return value + " AM"
-}
-
-func addPM(value string) string {
-	if strings.Contains(strings.ToUpper(value), "AM") || strings.Contains(strings.ToUpper(value), "PM") {
-		return value
-	}
-	return value + " PM"
+	return value + " " + defaultPeriod
 }

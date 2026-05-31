@@ -14,25 +14,24 @@ templ DaveningTimes(viewData common.ViewData) {
 					</div>
 				}
 				if viewData.Zmanim.ShowDaveningTimes {
-					<div class="davening-times__row davening-times__row--morning">
-						<dt><span class="davening-times__icon" aria-hidden="true">🌅</span><span>Shachris</span></dt>
-						<dd>8:00 AM</dd>
-					</div>
-					<div class="davening-times__row davening-times__row--afternoon">
-						<dt><span class="davening-times__icon" aria-hidden="true">☀️</span><span>Mincha</span></dt>
-						<dd>8:30 PM</dd>
-					</div>
-				}
-				if viewData.Zmanim.ShowSunTimes {
+					for _, entry := range viewData.ZmanimTimes.Davening {
+						if entry.Label != "" && entry.Time != "" {
+							<div class={ "davening-times__row " + daveningRowClass(entry.Label) }>
+								<dt><span class="davening-times__icon" aria-hidden="true">{ daveningIcon(entry.Label) }</span><span>{ entry.Label }</span></dt>
+								<dd>{ entry.Time }</dd>
+							</div>
+							if viewData.Zmanim.ShowSunTimes && isMincha(entry.Label) {
+								<div class="davening-times__row davening-times__row--shkiah">
+									<dt><span class="davening-times__icon" aria-hidden="true">🌇</span><span>Shkiah</span></dt>
+									<dd>{ viewData.ZmanimTimes.Sunset }</dd>
+								</div>
+							}
+						}
+					}
+				} else if viewData.Zmanim.ShowSunTimes {
 					<div class="davening-times__row davening-times__row--shkiah">
 						<dt><span class="davening-times__icon" aria-hidden="true">🌇</span><span>Shkiah</span></dt>
 						<dd>{ viewData.ZmanimTimes.Sunset }</dd>
-					</div>
-				}
-				if viewData.Zmanim.ShowDaveningTimes {
-					<div class="davening-times__row davening-times__row--night">
-						<dt><span class="davening-times__icon" aria-hidden="true">🌙</span><span>Maariv</span></dt>
-						<dd>9:00 PM</dd>
 					</div>
 				}
 			</dl>

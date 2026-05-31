@@ -134,7 +134,11 @@ func TestDaveningTimesRendersDynamicSunTimesAndHardcodedSchedule(t *testing.T) {
 	var rendered bytes.Buffer
 
 	err := DaveningTimes(common.ViewData{
-		ZmanimTimes: zmanim.Times{Sunrise: "5:40 AM", Sunset: "8:51 PM"},
+		ZmanimTimes: zmanim.Times{
+			Sunrise:  "5:40 AM",
+			Sunset:   "8:51 PM",
+			Davening: []zmanim.TimeEntry{{Label: "Shachris", Time: "8:00 AM"}, {Label: "Mincha", Time: "8:30 PM"}, {Label: "Maariv", Time: "9:00 PM"}},
+		},
 		Config: config.Config{Zmanim: config.ZmanimConfig{
 			Enabled:            true,
 			ShowSunTimes:       true,
@@ -175,7 +179,11 @@ func TestDaveningTimesCanHideSunTimesIndependently(t *testing.T) {
 	var rendered bytes.Buffer
 
 	err := DaveningTimes(common.ViewData{
-		ZmanimTimes: zmanim.Times{Sunrise: "5:40 AM", Sunset: "8:51 PM"},
+		ZmanimTimes: zmanim.Times{
+			Sunrise:  "5:40 AM",
+			Sunset:   "8:51 PM",
+			Davening: []zmanim.TimeEntry{{Label: "Shachris", Time: "8:00 AM"}, {Label: "Mincha", Time: "8:30 PM"}, {Label: "Maariv", Time: "9:00 PM"}},
+		},
 		Config: config.Config{Zmanim: config.ZmanimConfig{
 			Enabled:            true,
 			ShowSunTimes:       false,
