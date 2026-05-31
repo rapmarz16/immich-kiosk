@@ -410,8 +410,8 @@ func todaysCalendarSection(text string) string {
 func findDaveningTime(section string, labels []string) string {
 	for _, label := range labels {
 		patterns := []*regexp.Regexp{
-			regexp.MustCompile(`(?is)\b` + regexp.QuoteMeta(label) + `\b(?!\s+Hamincha)(?:\s+(?:Gedolah|Ketana))?\s*[:\-–]?\s*([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)`),
-			regexp.MustCompile(`(?is)([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)\s+\b` + regexp.QuoteMeta(label) + `\b(?!\s+Hamincha)`),
+			regexp.MustCompile(`(?is)\b` + regexp.QuoteMeta(label) + `\b(?:\s+(?:Gedolah|Ketana))?\s*[:\-–]?\s*([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)`),
+			regexp.MustCompile(`(?is)([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)\s+\b` + regexp.QuoteMeta(label) + `\b`),
 		}
 		matches := [][]string{}
 		for _, pattern := range patterns {

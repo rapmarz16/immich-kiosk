@@ -137,12 +137,12 @@ func TestDaveningTimesRendersDynamicSunTimesAndHardcodedSchedule(t *testing.T) {
 		ZmanimTimes: zmanim.Times{
 			Sunrise:  "5:40 AM",
 			Sunset:   "8:51 PM",
-			Davening: []zmanim.TimeEntry{{Label: "Shachris", Time: "8:00 AM"}, {Label: "Mincha", Time: "8:30 PM"}, {Label: "Maariv", Time: "9:00 PM"}},
+			Davening: []zmanim.TimeEntry{{Label: "Shachris", Time: "8:00 AM"}, {Label: "Mincha", Time: "8:30 PM"}, {Label: "Mincha & Maariv downstairs", Time: "8:40 PM"}, {Label: "Maariv", Time: "9:00 PM"}},
 		},
 		Config: config.Config{Zmanim: config.ZmanimConfig{
-			Enabled:            true,
-			ShowSunTimes:       true,
-			ShowDaveningTimes:  true,
+			Enabled:           true,
+			ShowSunTimes:      true,
+			ShowDaveningTimes: true,
 		}},
 	}).Render(context.Background(), &rendered)
 	if err != nil {
@@ -152,7 +152,7 @@ func TestDaveningTimesRendersDynamicSunTimesAndHardcodedSchedule(t *testing.T) {
 	html := rendered.String()
 	for _, want := range []string{
 		`id="davening-times"`,
-		"Today&#39;s Zmanim",
+		"Today's Zmanim",
 		"🌄",
 		"Neitz",
 		"5:40 AM",
@@ -162,6 +162,9 @@ func TestDaveningTimesRendersDynamicSunTimesAndHardcodedSchedule(t *testing.T) {
 		"☀️",
 		"Mincha",
 		"8:30 PM",
+		"Mincha &amp; Maariv downstairs",
+		"8:40 PM",
+		"davening-times__row--verbose-label",
 		"🌇",
 		"Shkiah",
 		"8:51 PM",
@@ -172,6 +175,16 @@ func TestDaveningTimesRendersDynamicSunTimesAndHardcodedSchedule(t *testing.T) {
 		if !strings.Contains(html, want) {
 			t.Fatalf("DaveningTimes() output missing %q in %s", want, html)
 		}
+	}
+
+	minchaMaarivIndex := strings.Index(html, "Mincha &amp; Maariv downstairs")
+	shkiahIndex := strings.Index(html, "Shkiah")
+	maarivIndex := strings.LastIndex(html, "Maariv")
+	if minchaMaarivIndex == -1 || shkiahIndex == -1 || maarivIndex == -1 {
+		t.Fatalf("DaveningTimes() output missing expected ordering markers in %s", html)
+	}
+	if !(minchaMaarivIndex < shkiahIndex && shkiahIndex < maarivIndex) {
+		t.Fatalf("DaveningTimes() output order = Mincha/Maariv %d, Shkiah %d, Maariv %d; want Mincha/Maariv before Shkiah before Maariv in %s", minchaMaarivIndex, shkiahIndex, maarivIndex, html)
 	}
 }
 
@@ -185,9 +198,9 @@ func TestDaveningTimesCanHideSunTimesIndependently(t *testing.T) {
 			Davening: []zmanim.TimeEntry{{Label: "Shachris", Time: "8:00 AM"}, {Label: "Mincha", Time: "8:30 PM"}, {Label: "Maariv", Time: "9:00 PM"}},
 		},
 		Config: config.Config{Zmanim: config.ZmanimConfig{
-			Enabled:            true,
-			ShowSunTimes:       false,
-			ShowDaveningTimes:  true,
+			Enabled:           true,
+			ShowSunTimes:      false,
+			ShowDaveningTimes: true,
 		}},
 	}).Render(context.Background(), &rendered)
 	if err != nil {
