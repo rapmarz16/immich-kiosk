@@ -58,8 +58,18 @@
     display: inline-flex;
     align-items: center;
     gap: 0.32rem;
+    min-width: 0;
     font-size: 0.86rem;
     font-weight: 600;
+}
+
+.davening-times__label {
+    white-space: nowrap;
+}
+
+.davening-times__row--verbose-label dt {
+    gap: 0.24rem;
+    font-size: 0.74rem;
 }
 
 .davening-times__icon {
