@@ -138,11 +138,14 @@ func TestDaveningTimesRendersHardcodedSchedule(t *testing.T) {
 	html := rendered.String()
 	for _, want := range []string{
 		`id="davening-times"`,
-		"Davening Times",
+		"Today&#39;s Zmanim",
+		"🌅",
 		"Shachris",
 		"8:00 AM",
+		"☀️",
 		"Mincha",
 		"8:30 PM",
+		"🌙",
 		"Maariv",
 		"9:00 PM",
 	} {

@@ -55,8 +55,35 @@
 }
 
 .davening-times__row dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     font-size: 1rem;
     font-weight: 600;
+}
+
+.davening-times__icon {
+    display: inline-grid;
+    place-items: center;
+    width: 1.45rem;
+    height: 1.45rem;
+    font-size: 0.95rem;
+    line-height: 1;
+    text-shadow: none;
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+}
+
+.davening-times__row--morning .davening-times__icon {
+    background: rgba(255, 185, 92, 0.22);
+}
+
+.davening-times__row--afternoon .davening-times__icon {
+    background: rgba(255, 226, 94, 0.2);
+}
+
+.davening-times__row--night .davening-times__icon {
+    background: rgba(116, 167, 255, 0.22);
 }
 
 .davening-times__row dd {

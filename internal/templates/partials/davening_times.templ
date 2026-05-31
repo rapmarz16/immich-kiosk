@@ -1,19 +1,19 @@
 package partials
 
 templ DaveningTimes() {
-	<section id="davening-times" aria-label="Local shul davening times">
-		<h2 class="davening-times__title">Davening Times</h2>
+	<section id="davening-times" aria-label="Today's zmanim">
+		<h2 class="davening-times__title">Today's Zmanim</h2>
 		<dl class="davening-times__list">
-			<div class="davening-times__row">
-				<dt>Shachris</dt>
+			<div class="davening-times__row davening-times__row--morning">
+				<dt><span class="davening-times__icon" aria-hidden="true">🌅</span><span>Shachris</span></dt>
 				<dd>8:00 AM</dd>
 			</div>
-			<div class="davening-times__row">
-				<dt>Mincha</dt>
+			<div class="davening-times__row davening-times__row--afternoon">
+				<dt><span class="davening-times__icon" aria-hidden="true">☀️</span><span>Mincha</span></dt>
 				<dd>8:30 PM</dd>
 			</div>
-			<div class="davening-times__row">
-				<dt>Maariv</dt>
+			<div class="davening-times__row davening-times__row--night">
+				<dt><span class="davening-times__icon" aria-hidden="true">🌙</span><span>Maariv</span></dt>
 				<dd>9:00 PM</dd>
 			</div>
 		</dl>
