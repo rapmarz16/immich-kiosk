@@ -16,6 +16,7 @@ import (
 	"github.com/damongolding/immich-kiosk/internal/immich"
 	"github.com/damongolding/immich-kiosk/internal/kiosk"
 	"github.com/damongolding/immich-kiosk/internal/utils"
+	"github.com/damongolding/immich-kiosk/internal/zmanim"
 	"github.com/labstack/echo/v5"
 )
 
@@ -99,6 +100,7 @@ type ViewData struct {
 	Assets        []ViewImageData // Assets contains the collection of assets to display in view
 	Queries       url.Values      // Queries contains the URL query parameters
 	CustomCSS     []byte          // CustomCSS contains custom CSS styling as bytes
+	ZmanimTimes   zmanim.Times    // ZmanimTimes contains cached sunrise and sunset values
 	config.Config                 // Config contains the instance configuration
 }
 

@@ -1,29 +1,41 @@
 package partials
 
-templ DaveningTimes() {
-	<section id="davening-times" aria-label="Today's zmanim">
-		<h2 class="davening-times__title">Today's Zmanim</h2>
-		<dl class="davening-times__list">
-			<div class="davening-times__row davening-times__row--neitz">
-				<dt><span class="davening-times__icon" aria-hidden="true">🌄</span><span>Neitz</span></dt>
-				<dd>5:31 AM</dd>
-			</div>
-			<div class="davening-times__row davening-times__row--morning">
-				<dt><span class="davening-times__icon" aria-hidden="true">🌅</span><span>Shachris</span></dt>
-				<dd>8:00 AM</dd>
-			</div>
-			<div class="davening-times__row davening-times__row--afternoon">
-				<dt><span class="davening-times__icon" aria-hidden="true">☀️</span><span>Mincha</span></dt>
-				<dd>8:30 PM</dd>
-			</div>
-			<div class="davening-times__row davening-times__row--shkiah">
-				<dt><span class="davening-times__icon" aria-hidden="true">🌇</span><span>Shkiah</span></dt>
-				<dd>8:51 PM</dd>
-			</div>
-			<div class="davening-times__row davening-times__row--night">
-				<dt><span class="davening-times__icon" aria-hidden="true">🌙</span><span>Maariv</span></dt>
-				<dd>9:00 PM</dd>
-			</div>
-		</dl>
-	</section>
+import "github.com/damongolding/immich-kiosk/internal/common"
+
+templ DaveningTimes(viewData common.ViewData) {
+	if viewData.Zmanim.Enabled && (viewData.Zmanim.ShowSunTimes || viewData.Zmanim.ShowDaveningTimes) {
+		<section id="davening-times" aria-label="Today's zmanim">
+			<h2 class="davening-times__title">Today's Zmanim</h2>
+			<dl class="davening-times__list">
+				if viewData.Zmanim.ShowSunTimes {
+					<div class="davening-times__row davening-times__row--neitz">
+						<dt><span class="davening-times__icon" aria-hidden="true">🌄</span><span>Neitz</span></dt>
+						<dd>{ viewData.ZmanimTimes.Sunrise }</dd>
+					</div>
+				}
+				if viewData.Zmanim.ShowDaveningTimes {
+					<div class="davening-times__row davening-times__row--morning">
+						<dt><span class="davening-times__icon" aria-hidden="true">🌅</span><span>Shachris</span></dt>
+						<dd>8:00 AM</dd>
+					</div>
+					<div class="davening-times__row davening-times__row--afternoon">
+						<dt><span class="davening-times__icon" aria-hidden="true">☀️</span><span>Mincha</span></dt>
+						<dd>8:30 PM</dd>
+					</div>
+				}
+				if viewData.Zmanim.ShowSunTimes {
+					<div class="davening-times__row davening-times__row--shkiah">
+						<dt><span class="davening-times__icon" aria-hidden="true">🌇</span><span>Shkiah</span></dt>
+						<dd>{ viewData.ZmanimTimes.Sunset }</dd>
+					</div>
+				}
+				if viewData.Zmanim.ShowDaveningTimes {
+					<div class="davening-times__row davening-times__row--night">
+						<dt><span class="davening-times__icon" aria-hidden="true">🌙</span><span>Maariv</span></dt>
+						<dd>9:00 PM</dd>
+					</div>
+				}
+			</dl>
+		</section>
+	}
 }

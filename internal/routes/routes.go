@@ -18,6 +18,7 @@ import (
 	"github.com/damongolding/immich-kiosk/internal/templates/partials"
 	"github.com/damongolding/immich-kiosk/internal/utils"
 	"github.com/damongolding/immich-kiosk/internal/video"
+	"github.com/damongolding/immich-kiosk/internal/zmanim"
 )
 
 const (
@@ -33,6 +34,7 @@ var (
 	drawFacesOnImages string
 
 	VideoManager *video.Manager
+	ZmanimManager *zmanim.Manager
 
 	mu sync.Mutex
 )
@@ -51,6 +53,13 @@ type requestMetadata struct {
 
 func ShouldDrawFacesOnImages() bool {
 	return drawFacesOnImages == "true"
+}
+
+func currentZmanim() zmanim.Times {
+	if ZmanimManager == nil {
+		return zmanim.Times{Sunrise: zmanim.DefaultFallbackNeitz, Sunset: zmanim.DefaultFallbackShkiah}
+	}
+	return ZmanimManager.Current()
 }
 
 // InitializeRequestData processes incoming request context and configuration to create RouteRequestData.

@@ -140,6 +140,17 @@ hide_button_action: tag # tag, archive, or both [tag, archive]
 #         visibility: false
 #         temperature_range: false
 
+## Today's Zmanim overlay
+# zmanim:
+#   enabled: true
+#   show_sun_times: true # Neitz and Shkiah
+#   show_davening_times: true # Shachris, Mincha, Maariv
+#   source_url: "https://www.myzmanim.com/day.aspx?vars=75405214"
+#   cache_file: "/config/zmanim-cache.json" # persisted when ./config is mounted to /config
+#   refresh_time: "01:00" # local 24-hour time; app also refreshes on startup
+#   fallback_neitz: "5:31 AM"
+#   fallback_shkiah: "8:51 PM"
+
 ## Add iframes into Kiosk - you can use local files or remote URLs
 #iframe:
 # - https://iframe.immichkiosk.app/pokemon

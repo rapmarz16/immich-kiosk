@@ -788,9 +788,10 @@ func renderCachedViewData(c *echo.Context, cachedViewData []common.ViewData, req
 
 	cache.Set(cacheKey, viewDataToSave, requestConfig.Duration, requestConfig.CacheDuration)
 
-	// Update history which will be outdated in cache
+	// Update history and zmanim which may be outdated in cache
 	utils.TrimHistory(&requestConfig.History, kiosk.HistoryLimit)
 	viewDataToRender.History = requestConfig.History
+	viewDataToRender.ZmanimTimes = currentZmanim()
 
 	if requestConfig.ShowVideos && viewDataToRender.Assets[0].ImmichAsset.Type == immich.VideoType {
 		return Render(c, http.StatusOK, videoComponent.Video(viewDataToRender, secret))
@@ -832,9 +833,10 @@ func determineLayoutMode(layout string, clientHeight, clientWidth int) string {
 // It selects and processes one or two assets as needed for the layout, handling orientation and split view logic, and returns the resulting ViewData or an error.
 func generateViewData(requestConfig config.Config, c common.ContextCopy, requestID, deviceID string, isPrefetch bool) (common.ViewData, error) {
 	viewData := common.ViewData{
-		RequestID: requestID,
-		DeviceID:  deviceID,
-		Config:    requestConfig,
+		RequestID:    requestID,
+		DeviceID:     deviceID,
+		ZmanimTimes:  currentZmanim(),
+		Config:       requestConfig,
 	}
 
 	requestConfig.Layout = determineLayoutMode(requestConfig.Layout, requestConfig.ClientData.Height, requestConfig.ClientData.Width)

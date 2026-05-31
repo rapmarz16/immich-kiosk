@@ -7,7 +7,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/damongolding/immich-kiosk/internal/common"
+	"github.com/damongolding/immich-kiosk/internal/config"
 	"github.com/damongolding/immich-kiosk/internal/immich"
+	"github.com/damongolding/immich-kiosk/internal/zmanim"
 )
 
 func TestAssetCameraData(t *testing.T) {
@@ -127,10 +130,17 @@ func TestTrimFloatToString(t *testing.T) {
 	}
 }
 
-func TestDaveningTimesRendersHardcodedSchedule(t *testing.T) {
+func TestDaveningTimesRendersDynamicSunTimesAndHardcodedSchedule(t *testing.T) {
 	var rendered bytes.Buffer
 
-	err := DaveningTimes().Render(context.Background(), &rendered)
+	err := DaveningTimes(common.ViewData{
+		ZmanimTimes: zmanim.Times{Sunrise: "5:40 AM", Sunset: "8:51 PM"},
+		Config: config.Config{Zmanim: config.ZmanimConfig{
+			Enabled:            true,
+			ShowSunTimes:       true,
+			ShowDaveningTimes:  true,
+		}},
+	}).Render(context.Background(), &rendered)
 	if err != nil {
 		t.Fatalf("DaveningTimes render failed: %v", err)
 	}
@@ -141,7 +151,7 @@ func TestDaveningTimesRendersHardcodedSchedule(t *testing.T) {
 		"Today&#39;s Zmanim",
 		"🌄",
 		"Neitz",
-		"5:31 AM",
+		"5:40 AM",
 		"🌅",
 		"Shachris",
 		"8:00 AM",
@@ -155,6 +165,34 @@ func TestDaveningTimesRendersHardcodedSchedule(t *testing.T) {
 		"Maariv",
 		"9:00 PM",
 	} {
+		if !strings.Contains(html, want) {
+			t.Fatalf("DaveningTimes() output missing %q in %s", want, html)
+		}
+	}
+}
+
+func TestDaveningTimesCanHideSunTimesIndependently(t *testing.T) {
+	var rendered bytes.Buffer
+
+	err := DaveningTimes(common.ViewData{
+		ZmanimTimes: zmanim.Times{Sunrise: "5:40 AM", Sunset: "8:51 PM"},
+		Config: config.Config{Zmanim: config.ZmanimConfig{
+			Enabled:            true,
+			ShowSunTimes:       false,
+			ShowDaveningTimes:  true,
+		}},
+	}).Render(context.Background(), &rendered)
+	if err != nil {
+		t.Fatalf("DaveningTimes render failed: %v", err)
+	}
+
+	html := rendered.String()
+	for _, hidden := range []string{"Neitz", "Shkiah", "5:40 AM", "8:51 PM"} {
+		if strings.Contains(html, hidden) {
+			t.Fatalf("DaveningTimes() output unexpectedly contained %q in %s", hidden, html)
+		}
+	}
+	for _, want := range []string{"Shachris", "Mincha", "Maariv"} {
 		if !strings.Contains(html, want) {
 			t.Fatalf("DaveningTimes() output missing %q in %s", want, html)
 		}

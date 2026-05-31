@@ -64,6 +64,7 @@ func Home(baseConfig *config.Config, com *common.Common) echo.HandlerFunc {
 			DeviceID:     generateDeviceID(c),
 			Queries:      queryParams,
 			CustomCSS:    customCSS,
+			ZmanimTimes:  currentZmanim(),
 			Config:       requestConfig,
 		}
 

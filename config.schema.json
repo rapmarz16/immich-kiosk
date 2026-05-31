@@ -478,6 +478,52 @@
       },
       "required": ["locations"]
     },
+    "zmanim": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Today's Zmanim overlay"
+        },
+        "show_sun_times": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Neitz and Shkiah rows"
+        },
+        "show_davening_times": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Shachris, Mincha, and Maariv rows"
+        },
+        "source_url": {
+          "type": "string",
+          "format": "uri",
+          "default": "https://www.myzmanim.com/day.aspx?vars=75405214",
+          "description": "MyZmanim day page to scrape for sunrise and sunset"
+        },
+        "cache_file": {
+          "type": "string",
+          "default": "",
+          "description": "Persistent JSON cache file path; defaults to /config/zmanim-cache.json in containers"
+        },
+        "refresh_time": {
+          "type": "string",
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+          "default": "01:00",
+          "description": "Local 24-hour time for the daily MyZmanim refresh"
+        },
+        "fallback_neitz": {
+          "type": "string",
+          "default": "5:31 AM"
+        },
+        "fallback_shkiah": {
+          "type": "string",
+          "default": "8:51 PM"
+        }
+      }
+    },
     "webhooks": {
       "type": "array",
       "items": {

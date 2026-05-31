@@ -35,6 +35,7 @@ import (
 	"github.com/damongolding/immich-kiosk/internal/utils"
 	"github.com/damongolding/immich-kiosk/internal/video"
 	"github.com/damongolding/immich-kiosk/internal/weather"
+	"github.com/damongolding/immich-kiosk/internal/zmanim"
 )
 
 // version current build version number
@@ -107,6 +108,22 @@ func main() {
 	}
 
 	cache.Initialize()
+
+	if baseConfig.Zmanim.Enabled {
+		zmanimManager := zmanim.NewManager(zmanim.Config{
+			SourceURL:   baseConfig.Zmanim.SourceURL,
+			CacheFile:   baseConfig.Zmanim.CacheFile,
+			RefreshTime: baseConfig.Zmanim.RefreshTime,
+			HTTPTimeout: time.Second * time.Duration(baseConfig.Kiosk.HTTPTimeout),
+			FallbackData: zmanim.Times{
+				Source:  baseConfig.Zmanim.SourceURL,
+				Sunrise: baseConfig.Zmanim.FallbackNeitz,
+				Sunset:  baseConfig.Zmanim.FallbackShkiah,
+			},
+		})
+		zmanimManager.Start(c.Context())
+		routes.ZmanimManager = zmanimManager
+	}
 
 	immich.HTTPClient.Timeout = time.Second * time.Duration(baseConfig.Kiosk.HTTPTimeout)
 

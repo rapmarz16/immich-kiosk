@@ -146,6 +146,25 @@ type KioskSettings struct {
 	DemoMode bool `json:"-" yaml:"-" mapstructure:"demo_mode" default:"false"`
 }
 
+type ZmanimConfig struct {
+	// Enabled enables the Today's Zmanim overlay.
+	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled" query:"show_zmanim" form:"show_zmanim" default:"true"`
+	// ShowSunTimes controls the Neitz/Shkiah group independently from davening times.
+	ShowSunTimes bool `json:"showSunTimes" yaml:"show_sun_times" mapstructure:"show_sun_times" query:"show_sun_times" form:"show_sun_times" default:"true"`
+	// ShowDaveningTimes controls the Shachris/Mincha/Maariv group independently from sun times.
+	ShowDaveningTimes bool `json:"showDaveningTimes" yaml:"show_davening_times" mapstructure:"show_davening_times" query:"show_davening_times" form:"show_davening_times" default:"true"`
+	// SourceURL is the MyZmanim page to scrape for today's sunrise and sunset.
+	SourceURL string `json:"sourceUrl" yaml:"source_url" mapstructure:"source_url" default:"https://www.myzmanim.com/day.aspx?vars=75405214" redact:"true"`
+	// CacheFile stores the last fetched sun times and should live on a persistent volume.
+	CacheFile string `json:"cacheFile" yaml:"cache_file" mapstructure:"cache_file" default:"" redact:"true"`
+	// RefreshTime is the local 24-hour time to refresh sun times daily.
+	RefreshTime string `json:"refreshTime" yaml:"refresh_time" mapstructure:"refresh_time" default:"01:00"`
+	// FallbackNeitz is shown if MyZmanim cannot be fetched or parsed.
+	FallbackNeitz string `json:"fallbackNeitz" yaml:"fallback_neitz" mapstructure:"fallback_neitz" default:"5:31 AM"`
+	// FallbackShkiah is shown if MyZmanim cannot be fetched or parsed.
+	FallbackShkiah string `json:"fallbackShkiah" yaml:"fallback_shkiah" mapstructure:"fallback_shkiah" default:"8:51 PM"`
+}
+
 type WeatherConfig struct {
 	// Locations A list of locations to fetch and display weather data from. Each location
 	Locations []WeatherLocation `json:"locations" yaml:"locations" mapstructure:"locations" default:"[]"`
@@ -473,6 +492,7 @@ type Config struct {
 	QrCodeOpenInApp bool `json:"qrCodeOpenInApp" yaml:"qr_code_open_in_app" mapstructure:"qr_code_open_in_app" query:"qr_code_open_in_app" form:"qr_code_open_in_app" default:"true"`
 
 	Weather WeatherConfig `json:"weather" yaml:"weather" mapstructure:"weather"`
+	Zmanim ZmanimConfig `json:"zmanim" yaml:"zmanim" mapstructure:"zmanim"`
 
 	Iframe []string `json:"iframe" yaml:"iframe" mapstructure:"iframe" query:"iframe" form:"iframe" default:"[]"`
 
