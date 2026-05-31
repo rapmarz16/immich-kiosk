@@ -1,8 +1,8 @@
 #davening-times {
-    position: absolute;
+    position: fixed;
     right: 1rem;
     bottom: 1rem;
-    z-index: var(--z-clock);
+    z-index: 999;
     min-width: 13rem;
     padding: 0.85rem 1rem;
     color: #fff;

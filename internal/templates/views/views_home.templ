@@ -77,8 +77,8 @@ templ Home(viewData common.ViewData, secret string) {
 							}
 						</div>
 					</section>
-					@partials.DaveningTimes()
 				}
+				@partials.DaveningTimes()
 				if !viewData.DisableNavigation {
 					@partials.Menu(viewData, viewData.Queries, secret)
 				}
