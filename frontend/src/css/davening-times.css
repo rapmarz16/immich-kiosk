@@ -3,8 +3,8 @@
     right: 1rem;
     bottom: 1rem;
     z-index: 999;
-    min-width: 13.5rem;
-    padding: 0.6rem 0.7rem;
+    min-width: 11rem;
+    padding: 0.6rem 0.75rem;
     color: #fff;
     text-shadow: 0 0 1rem rgba(0, 0, 0, 0.7);
     background: rgba(0, 0, 0, 0.42);
@@ -27,7 +27,7 @@
 }
 
 .davening-times__title {
-    margin: 0 0 0.35rem;
+    margin: 0 0 0.3rem;
     font-size: 0.68rem;
     font-weight: 700;
     line-height: 1;
@@ -36,62 +36,30 @@
     opacity: 0.86;
 }
 
-.davening-times__zmanim {
+.davening-times__list {
     display: grid;
     gap: 0.22rem;
-    margin-bottom: 0.42rem;
-    padding-bottom: 0.42rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    margin: 0;
 }
 
 .davening-times__row {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
 }
 
-.davening-times__label {
+.davening-times__row dt,
+.davening-times__row dd {
+    margin: 0;
+}
+
+.davening-times__row dt {
     display: inline-flex;
     align-items: center;
     gap: 0.32rem;
-    font-size: 0.82rem;
+    font-size: 0.86rem;
     font-weight: 600;
-}
-
-.davening-times__time {
-    font-size: 0.9rem;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-}
-
-.davening-times__tefilos {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.35rem;
-}
-
-.davening-times__tefila {
-    display: grid;
-    justify-items: center;
-    gap: 0.16rem;
-    min-width: 0;
-    padding: 0.25rem 0.2rem;
-    background: rgba(255, 255, 255, 0.07);
-    border-radius: 0.55rem;
-}
-
-.davening-times__tefila-label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    line-height: 1;
-}
-
-.davening-times__tefila-time {
-    font-size: 0.78rem;
-    font-weight: 800;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
 }
 
 .davening-times__icon {
@@ -123,35 +91,29 @@
     background: rgba(116, 167, 255, 0.22);
 }
 
+.davening-times__row dd {
+    font-size: 0.92rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
 @media screen and (max-width: 31.25rem) {
     #davening-times {
         right: 0.5rem;
         bottom: 0.5rem;
-        min-width: 12rem;
-        padding: 0.5rem 0.55rem;
+        min-width: 9.75rem;
+        padding: 0.5rem 0.65rem;
     }
 
     .davening-times__title {
         font-size: 0.62rem;
     }
 
-    .davening-times__label {
-        font-size: 0.76rem;
+    .davening-times__row dt {
+        font-size: 0.78rem;
     }
 
-    .davening-times__time {
-        font-size: 0.82rem;
-    }
-
-    .davening-times__tefilos {
-        gap: 0.25rem;
-    }
-
-    .davening-times__tefila-label {
-        font-size: 0.62rem;
-    }
-
-    .davening-times__tefila-time {
-        font-size: 0.72rem;
+    .davening-times__row dd {
+        font-size: 0.84rem;
     }
 }
