@@ -3,27 +3,32 @@ package partials
 templ DaveningTimes() {
 	<section id="davening-times" aria-label="Today's zmanim">
 		<h2 class="davening-times__title">Today's Zmanim</h2>
-		<dl class="davening-times__list">
+		<div class="davening-times__zmanim" aria-label="Zmanim">
 			<div class="davening-times__row davening-times__row--neitz">
-				<dt><span class="davening-times__icon" aria-hidden="true">🌄</span><span>Neitz</span></dt>
-				<dd>5:31 AM</dd>
-			</div>
-			<div class="davening-times__row davening-times__row--morning">
-				<dt><span class="davening-times__icon" aria-hidden="true">🌅</span><span>Shachris</span></dt>
-				<dd>8:00 AM</dd>
-			</div>
-			<div class="davening-times__row davening-times__row--afternoon">
-				<dt><span class="davening-times__icon" aria-hidden="true">☀️</span><span>Mincha</span></dt>
-				<dd>8:30 PM</dd>
+				<span class="davening-times__label"><span class="davening-times__icon" aria-hidden="true">🌄</span><span>Neitz</span></span>
+				<span class="davening-times__time">5:31 AM</span>
 			</div>
 			<div class="davening-times__row davening-times__row--shkiah">
-				<dt><span class="davening-times__icon" aria-hidden="true">🌇</span><span>Shkiah</span></dt>
-				<dd>8:51 PM</dd>
+				<span class="davening-times__label"><span class="davening-times__icon" aria-hidden="true">🌇</span><span>Shkiah</span></span>
+				<span class="davening-times__time">8:51 PM</span>
 			</div>
-			<div class="davening-times__row davening-times__row--night">
-				<dt><span class="davening-times__icon" aria-hidden="true">🌙</span><span>Maariv</span></dt>
-				<dd>9:00 PM</dd>
+		</div>
+		<div class="davening-times__tefilos" aria-label="Tefilos">
+			<div class="davening-times__tefila davening-times__row--morning">
+				<span class="davening-times__icon" aria-hidden="true">🌅</span>
+				<span class="davening-times__tefila-label">Shachris</span>
+				<span class="davening-times__tefila-time">8:00 AM</span>
 			</div>
-		</dl>
+			<div class="davening-times__tefila davening-times__row--afternoon">
+				<span class="davening-times__icon" aria-hidden="true">☀️</span>
+				<span class="davening-times__tefila-label">Mincha</span>
+				<span class="davening-times__tefila-time">8:30 PM</span>
+			</div>
+			<div class="davening-times__tefila davening-times__row--night">
+				<span class="davening-times__icon" aria-hidden="true">🌙</span>
+				<span class="davening-times__tefila-label">Maariv</span>
+				<span class="davening-times__tefila-time">9:00 PM</span>
+			</div>
+		</div>
 	</section>
 }
