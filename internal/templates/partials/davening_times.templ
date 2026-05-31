@@ -20,15 +20,10 @@ templ DaveningTimes(viewData common.ViewData) {
 								<dt><span class="davening-times__icon" aria-hidden="true">{ daveningIcon(entry.Label) }</span><span>{ entry.Label }</span></dt>
 								<dd>{ entry.Time }</dd>
 							</div>
-							if viewData.Zmanim.ShowSunTimes && isMincha(entry.Label) {
-								<div class="davening-times__row davening-times__row--shkiah">
-									<dt><span class="davening-times__icon" aria-hidden="true">🌇</span><span>Shkiah</span></dt>
-									<dd>{ viewData.ZmanimTimes.Sunset }</dd>
-								</div>
-							}
 						}
 					}
-				} else if viewData.Zmanim.ShowSunTimes {
+				}
+				if viewData.Zmanim.ShowSunTimes {
 					<div class="davening-times__row davening-times__row--shkiah">
 						<dt><span class="davening-times__icon" aria-hidden="true">🌇</span><span>Shkiah</span></dt>
 						<dd>{ viewData.ZmanimTimes.Sunset }</dd>

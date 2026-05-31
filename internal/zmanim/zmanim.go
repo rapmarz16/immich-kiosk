@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	DefaultSourceURL      = "https://www.khaltoraschesed.com/"
+	DefaultSourceURL      = "https://r.jina.ai/http://r.jina.ai/http://https://www.khaltoraschesed.com/"
 	DefaultRefreshTime    = "01:00"
 	DefaultFallbackNeitz  = "5:31 AM"
 	DefaultFallbackShkiah = "8:51 PM"
@@ -320,13 +320,14 @@ func parseKhalTorasChesedHTML(page, sourceURL string, now time.Time) (Times, err
 
 func findTimeAfterLabels(text string, labels []string) string {
 	for _, label := range labels {
-		pattern := regexp.MustCompile(`(?is)\b` + regexp.QuoteMeta(label) + `(?:\s+(?:Hachama|HaChama))?\b\s*[:\-–]?\s*([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)`)
-		if match := pattern.FindStringSubmatch(text); len(match) == 2 {
-			return match[1]
+		patterns := []*regexp.Regexp{
+			regexp.MustCompile(`(?is)\b` + regexp.QuoteMeta(label) + `\b(?:\s*\([^)]*\))?(?:\s+(?:Hachama|HaChama))?\s*[:\-–]?\s*([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)`),
+			regexp.MustCompile(`(?is)([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)\s+\b` + regexp.QuoteMeta(label) + `\b(?:\s*\([^)]*\))?(?:\s+(?:Hachama|HaChama))?`),
 		}
-		reversePattern := regexp.MustCompile(`(?is)([0-9]{1,2}:[0-9]{2}\s*(?:[ap]m|[AP]M)?)\s+\b` + regexp.QuoteMeta(label) + `(?:\s+(?:Hachama|HaChama))?\b`)
-		if match := reversePattern.FindStringSubmatch(text); len(match) == 2 {
-			return match[1]
+		for _, pattern := range patterns {
+			if match := pattern.FindStringSubmatch(text); len(match) == 2 {
+				return match[1]
+			}
 		}
 	}
 	return ""
@@ -337,6 +338,9 @@ func parseDaveningTimes(text string) []TimeEntry {
 	if section == "" {
 		section = text
 	}
+	if entries := parseCalendarDefinitionList(section); len(entries) > 0 {
+		return entries
+	}
 
 	entries := []TimeEntry{}
 	for _, item := range []struct {
@@ -345,7 +349,7 @@ func parseDaveningTimes(text string) []TimeEntry {
 	}{
 		{label: "Shachris", patterns: []string{"Shachris", "Shacharit", "Shacharis"}},
 		{label: "Mincha", patterns: []string{"Mincha"}},
-		{label: "Maariv", patterns: []string{"Maariv", "Ma'ariv"}},
+		{label: "Maariv", patterns: []string{"Maariv", "Ma'ariv", "Marriv"}},
 	} {
 		if value := findDaveningTime(section, item.patterns); value != "" {
 			entries = append(entries, TimeEntry{Label: item.label, Time: value})
@@ -354,8 +358,49 @@ func parseDaveningTimes(text string) []TimeEntry {
 	return entries
 }
 
+func parseCalendarDefinitionList(section string) []TimeEntry {
+	lines := strings.Split(section, "\n")
+	entries := []TimeEntry{}
+	for i := 0; i < len(lines)-1; i++ {
+		label := strings.TrimSpace(strings.TrimPrefix(lines[i], "*"))
+		value := strings.TrimSpace(lines[i+1])
+		if strings.HasPrefix(value, ":") {
+			value = strings.TrimSpace(strings.TrimPrefix(value, ":"))
+		} else if strings.HasPrefix(label, "*") || strings.Contains(label, ":") {
+			continue
+		} else {
+			continue
+		}
+		if !isDaveningLabel(label) || strings.Contains(strings.ToLower(label), "plag") {
+			continue
+		}
+		entries = append(entries, TimeEntry{Label: cleanDaveningLabel(label), Time: normalizeClockTime(value, defaultPeriodForLabel(label))})
+		i++
+	}
+	return entries
+}
+
+func isDaveningLabel(label string) bool {
+	lower := strings.ToLower(label)
+	return strings.Contains(lower, "shach") || strings.Contains(lower, "mincha") || strings.Contains(lower, "maariv") || strings.Contains(lower, "marriv")
+}
+
+func cleanDaveningLabel(label string) string {
+	label = strings.TrimSpace(regexp.MustCompile(`\s+`).ReplaceAllString(label, " "))
+	label = strings.ReplaceAll(label, "Marriv", "Maariv")
+	return label
+}
+
+func defaultPeriodForLabel(label string) string {
+	lower := strings.ToLower(label)
+	if strings.Contains(lower, "mincha") || strings.Contains(lower, "maariv") || strings.Contains(lower, "marriv") {
+		return "PM"
+	}
+	return "AM"
+}
+
 func todaysCalendarSection(text string) string {
-	pattern := regexp.MustCompile(`(?is)Today(?:'s)?\s+Calendar(.*?)(?:Tomorrow(?:'s)?\s+Calendar|Upcoming|Full Calendar|Announcements|$)`)
+	pattern := regexp.MustCompile(`(?is)Today(?:'s)?\s+Calendar(.*?)(?:\*\s*\*\s*\*|Friday\s+Night|Shabbos\s+Day|Tomorrow(?:'s)?\s+Calendar|Upcoming|Full Calendar|Announcements|$)`)
 	if match := pattern.FindStringSubmatch(text); len(match) == 2 {
 		return match[1]
 	}

@@ -500,7 +500,7 @@
         "source_url": {
           "type": "string",
           "format": "uri",
-          "default": "https://www.khaltoraschesed.com/",
+          "default": "https://r.jina.ai/http://r.jina.ai/http://https://www.khaltoraschesed.com/",
           "description": "Shul page to scrape for today's sun and davening times"
         },
         "cache_file": {

@@ -8,32 +8,38 @@ import (
 )
 
 func TestParseTodayHTMLExtractsKhalTorasChesedSunAndDaveningTimes(t *testing.T) {
-	html := `<html><head><title>K'hal Toras Chesed</title></head><body>
-		<section>
-			<h2>Today's Calendar</h2>
-			<div>Neitz Hachama: 5:31am</div>
-			<div>Shacharis 8:00am</div>
-			<div>Plag Hamincha 7:36pm</div>
-			<div>Mincha 8:30pm</div>
-			<div>Shkiah: 8:51pm</div>
-			<div>Maariv 9:00pm</div>
-		</section>
-		<h2>Tomorrow's Calendar</h2>
-		<div>Shacharis 7:00am</div>
-	</body></html>`
+	page := `Title: Khal Toras Chesed
 
-	got, err := ParseTodayHTML(html, DefaultSourceURL, time.Date(2026, 5, 31, 1, 0, 0, 0, time.Local))
+## Today's Calendar
+
+Shacharis
+: 7:45am
+Plag Mincha
+: 7:10pm
+Mincha upstairs
+: 8:15pm
+Mincha & Marriv downstairs
+: 8:40pm
+Maariv
+: 9:45pm
+
+* * *
+
+Netz (Sunrise)5:39am
+Shkiah (Sunset)8:52pm`
+
+	got, err := ParseTodayHTML(page, DefaultSourceURL, time.Date(2026, 5, 31, 1, 0, 0, 0, time.Local))
 	if err != nil {
 		t.Fatalf("ParseTodayHTML returned error: %v", err)
 	}
 
-	if got.Sunrise != "5:31 AM" {
-		t.Fatalf("Sunrise = %q, want 5:31 AM", got.Sunrise)
+	if got.Sunrise != "5:39 AM" {
+		t.Fatalf("Sunrise = %q, want 5:39 AM", got.Sunrise)
 	}
-	if got.Sunset != "8:51 PM" {
-		t.Fatalf("Sunset = %q, want 8:51 PM", got.Sunset)
+	if got.Sunset != "8:52 PM" {
+		t.Fatalf("Sunset = %q, want 8:52 PM", got.Sunset)
 	}
-	wantDavening := []TimeEntry{{Label: "Shachris", Time: "8:00 AM"}, {Label: "Mincha", Time: "8:30 PM"}, {Label: "Maariv", Time: "9:00 PM"}}
+	wantDavening := []TimeEntry{{Label: "Shacharis", Time: "7:45 AM"}, {Label: "Mincha upstairs", Time: "8:15 PM"}, {Label: "Mincha & Maariv downstairs", Time: "8:40 PM"}, {Label: "Maariv", Time: "9:45 PM"}}
 	if !reflect.DeepEqual(got.Davening, wantDavening) {
 		t.Fatalf("Davening = %#v, want %#v", got.Davening, wantDavening)
 	}

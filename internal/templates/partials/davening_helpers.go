@@ -3,12 +3,13 @@ package partials
 import "strings"
 
 func daveningIcon(label string) string {
-	switch strings.ToLower(label) {
-	case "shachris", "shacharit", "shacharis":
+	lower := strings.ToLower(label)
+	switch {
+	case strings.Contains(lower, "shach"):
 		return "🌅"
-	case "mincha":
+	case strings.Contains(lower, "mincha"):
 		return "☀️"
-	case "maariv", "ma'ariv":
+	case strings.Contains(lower, "maariv") || strings.Contains(lower, "marriv"):
 		return "🌙"
 	default:
 		return "🕯️"
@@ -16,16 +17,17 @@ func daveningIcon(label string) string {
 }
 
 func isMincha(label string) bool {
-	return strings.EqualFold(label, "mincha")
+	return strings.Contains(strings.ToLower(label), "mincha")
 }
 
 func daveningRowClass(label string) string {
-	switch strings.ToLower(label) {
-	case "shachris", "shacharit", "shacharis":
+	lower := strings.ToLower(label)
+	switch {
+	case strings.Contains(lower, "shach"):
 		return "davening-times__row--morning"
-	case "mincha":
+	case strings.Contains(lower, "mincha"):
 		return "davening-times__row--afternoon"
-	case "maariv", "ma'ariv":
+	case strings.Contains(lower, "maariv") || strings.Contains(lower, "marriv"):
 		return "davening-times__row--night"
 	default:
 		return "davening-times__row--davening"

@@ -154,7 +154,7 @@ type ZmanimConfig struct {
 	// ShowDaveningTimes controls the Shachris/Mincha/Maariv group independently from sun times.
 	ShowDaveningTimes bool `json:"showDaveningTimes" yaml:"show_davening_times" mapstructure:"show_davening_times" query:"show_davening_times" form:"show_davening_times" default:"true"`
 	// SourceURL is the shul page to scrape for today's sun and davening times.
-	SourceURL string `json:"sourceUrl" yaml:"source_url" mapstructure:"source_url" default:"https://www.khaltoraschesed.com/" redact:"true"`
+	SourceURL string `json:"sourceUrl" yaml:"source_url" mapstructure:"source_url" default:"https://r.jina.ai/http://r.jina.ai/http://https://www.khaltoraschesed.com/" redact:"true"`
 	// CacheFile stores the last fetched sun times and should live on a persistent volume.
 	CacheFile string `json:"cacheFile" yaml:"cache_file" mapstructure:"cache_file" default:"" redact:"true"`
 	// RefreshTime is the local 24-hour time to refresh sun times daily.
