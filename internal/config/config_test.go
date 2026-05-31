@@ -317,3 +317,34 @@ func TestCheckWeatherLocations(t *testing.T) {
 		})
 	}
 }
+
+func TestZmanimURLOverrides(t *testing.T) {
+	t.Run("show_zmanim_false_disables_overlay", func(t *testing.T) {
+		c := New()
+		c.Zmanim.Enabled = true
+
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodGet, "/?show_zmanim=false", nil)
+		rec := httptest.NewRecorder()
+		echoContext := e.NewContext(req, rec)
+
+		err := c.ConfigWithOverrides(echoContext.QueryParams(), echoContext)
+		assert.NoError(t, err, "ConfigWithOverrides should not return an error")
+		assert.False(t, c.Zmanim.Enabled, "show_zmanim=false should disable the zmanim overlay")
+	})
+
+	t.Run("disable_zmanim_true_disables_overlay", func(t *testing.T) {
+		c := New()
+		c.Zmanim.Enabled = true
+
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodGet, "/?disable_zmanim=true", nil)
+		rec := httptest.NewRecorder()
+		echoContext := e.NewContext(req, rec)
+
+		err := c.ConfigWithOverrides(echoContext.QueryParams(), echoContext)
+		assert.NoError(t, err, "ConfigWithOverrides should not return an error")
+		assert.True(t, c.Zmanim.DisableZmanim, "disable_zmanim=true should bind to the URL-only field")
+		assert.False(t, c.Zmanim.Enabled, "disable_zmanim=true should disable the zmanim overlay")
+	})
+}

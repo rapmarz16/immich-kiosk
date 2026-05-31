@@ -149,6 +149,8 @@ type KioskSettings struct {
 type ZmanimConfig struct {
 	// Enabled enables the Today's Zmanim overlay.
 	Enabled bool `json:"enabled" yaml:"enabled" mapstructure:"enabled" query:"show_zmanim" form:"show_zmanim" default:"true"`
+	// DisableZmanim disables the Today's Zmanim overlay via URL query parameters.
+	DisableZmanim bool `json:"disableZmanim" yaml:"-" mapstructure:"-" query:"disable_zmanim" form:"disable_zmanim" default:"false"`
 	// ShowSunTimes controls the Neitz/Shkiah group independently from davening times.
 	ShowSunTimes bool `json:"showSunTimes" yaml:"show_sun_times" mapstructure:"show_sun_times" query:"show_sun_times" form:"show_sun_times" default:"true"`
 	// ShowDaveningTimes controls the Shachris/Mincha/Maariv group independently from sun times.
@@ -492,7 +494,7 @@ type Config struct {
 	QrCodeOpenInApp bool `json:"qrCodeOpenInApp" yaml:"qr_code_open_in_app" mapstructure:"qr_code_open_in_app" query:"qr_code_open_in_app" form:"qr_code_open_in_app" default:"true"`
 
 	Weather WeatherConfig `json:"weather" yaml:"weather" mapstructure:"weather"`
-	Zmanim ZmanimConfig `json:"zmanim" yaml:"zmanim" mapstructure:"zmanim"`
+	Zmanim  ZmanimConfig  `json:"zmanim" yaml:"zmanim" mapstructure:"zmanim"`
 
 	Iframe []string `json:"iframe" yaml:"iframe" mapstructure:"iframe" query:"iframe" form:"iframe" default:"[]"`
 
@@ -732,6 +734,9 @@ func (c *Config) ConfigWithOverrides(queries url.Values, e *echo.Context) error 
 
 	c.checkFilterNewest()
 	c.checkExcludedAlbums()
+	if c.Zmanim.DisableZmanim {
+		c.Zmanim.Enabled = false
+	}
 
 	// Disabled features in demo mode
 	if c.Kiosk.DemoMode {
