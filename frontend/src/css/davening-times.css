@@ -94,11 +94,6 @@ body:has(#davening-times) .layout-splitview .frame--layout-splitview:nth-child(2
     white-space: nowrap;
 }
 
-.davening-times__row--verbose-label dt {
-    gap: 0.24rem;
-    font-size: 0.74rem;
-}
-
 .davening-times__icon {
     display: inline-grid;
     place-items: center;

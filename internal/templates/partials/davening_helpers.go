@@ -27,19 +27,35 @@ func isMaarivOnly(label string) bool {
 
 func daveningRowClass(label string) string {
 	lower := strings.ToLower(label)
-	classes := []string{}
 	switch {
 	case strings.Contains(lower, "shach"):
-		classes = append(classes, "davening-times__row--morning")
+		return "davening-times__row--morning"
 	case strings.Contains(lower, "mincha"):
-		classes = append(classes, "davening-times__row--afternoon")
+		return "davening-times__row--afternoon"
 	case strings.Contains(lower, "maariv") || strings.Contains(lower, "marriv"):
-		classes = append(classes, "davening-times__row--night")
+		return "davening-times__row--night"
 	default:
-		classes = append(classes, "davening-times__row--davening")
+		return "davening-times__row--davening"
 	}
-	if len([]rune(label)) >= 22 {
-		classes = append(classes, "davening-times__row--verbose-label")
+}
+
+func daveningDisplayLabel(label string) string {
+	words := strings.Fields(label)
+	if len(words) == 0 {
+		return label
 	}
-	return strings.Join(classes, " ")
+
+	displayWords := make([]string, 0, len(words))
+	for _, word := range words {
+		trimmed := strings.Trim(word, "()[]{}.,;:-")
+		if strings.EqualFold(trimmed, "downstairs") {
+			continue
+		}
+		displayWords = append(displayWords, word)
+	}
+
+	if len(displayWords) == 0 {
+		return label
+	}
+	return strings.Join(displayWords, " ")
 }

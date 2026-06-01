@@ -162,9 +162,8 @@ func TestDaveningTimesRendersDynamicSunTimesAndHardcodedSchedule(t *testing.T) {
 		"☀️",
 		"Mincha",
 		"8:30 PM",
-		"Mincha &amp; Maariv downstairs",
+		"Mincha &amp; Maariv",
 		"8:40 PM",
-		"davening-times__row--verbose-label",
 		"🌇",
 		"Shkiah",
 		"8:51 PM",
@@ -177,7 +176,13 @@ func TestDaveningTimesRendersDynamicSunTimesAndHardcodedSchedule(t *testing.T) {
 		}
 	}
 
-	minchaMaarivIndex := strings.Index(html, "Mincha &amp; Maariv downstairs")
+	for _, unwanted := range []string{"downstairs", "davening-times__row--verbose-label"} {
+		if strings.Contains(html, unwanted) {
+			t.Fatalf("DaveningTimes() output contains unwanted %q in %s", unwanted, html)
+		}
+	}
+
+	minchaMaarivIndex := strings.Index(html, "Mincha &amp; Maariv")
 	shkiahIndex := strings.Index(html, "Shkiah")
 	maarivIndex := strings.LastIndex(html, "Maariv")
 	if minchaMaarivIndex == -1 || shkiahIndex == -1 || maarivIndex == -1 {

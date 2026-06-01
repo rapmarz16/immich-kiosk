@@ -17,7 +17,7 @@ templ DaveningTimes(viewData common.ViewData) {
 					for _, entry := range viewData.ZmanimTimes.Davening {
 						if entry.Label != "" && entry.Time != "" && (!viewData.Zmanim.ShowSunTimes || !isMaarivOnly(entry.Label)) {
 							<div class={ "davening-times__row " + daveningRowClass(entry.Label) }>
-								<dt><span class="davening-times__icon" aria-hidden="true">{ daveningIcon(entry.Label) }</span><span class="davening-times__label">{ entry.Label }</span></dt>
+								<dt><span class="davening-times__icon" aria-hidden="true">{ daveningIcon(entry.Label) }</span><span class="davening-times__label">{ daveningDisplayLabel(entry.Label) }</span></dt>
 								<dd>{ entry.Time }</dd>
 							</div>
 						}
@@ -33,7 +33,7 @@ templ DaveningTimes(viewData common.ViewData) {
 					for _, entry := range viewData.ZmanimTimes.Davening {
 						if entry.Label != "" && entry.Time != "" && isMaarivOnly(entry.Label) {
 							<div class={ "davening-times__row " + daveningRowClass(entry.Label) }>
-								<dt><span class="davening-times__icon" aria-hidden="true">{ daveningIcon(entry.Label) }</span><span class="davening-times__label">{ entry.Label }</span></dt>
+								<dt><span class="davening-times__icon" aria-hidden="true">{ daveningIcon(entry.Label) }</span><span class="davening-times__label">{ daveningDisplayLabel(entry.Label) }</span></dt>
 								<dd>{ entry.Time }</dd>
 							</div>
 						}
